@@ -185,7 +185,7 @@
             return entityMap[s];
         });
     };
-    $('.mentions').bind("mentionAdded", function () { });
+
 
     $.widget("ui.areacomplete", $.ui.autocomplete, {
         options: $.extend({}, $.ui.autocomplete.prototype.options, {
@@ -279,61 +279,6 @@
             //  node = $('.mentions-input .mentions')[0];
             if (this.options.showAtCaret) {
                 return this.options.position.at = "left+" + pos.left + " top+" + pos.top;
-            }
-        }
-    });
-
-    $.widget("ui.editablecomplete", $.ui.areacomplete, {
-        options: $.extend({}, $.ui.areacomplete.prototype.options, {
-            showAtCaret: true
-        }),
-        selectCallback: function (event, ui) {
-            var mention, pos;
-            pos = {
-                start: this.start,
-                end: this.end
-            };
-            if (this.overriden.select) {
-                ui.item.pos = pos;
-                if (this.overriden.select(event, ui) === false) {
-                    return false;
-                }
-            }
-            mention = document.createTextNode(ui.item.value);
-            insertMention(mention, pos, this.options.suffix);
-            this.element.change();
-            return false;
-        },
-        search: function (value, event) {
-            var match, node, pos, sel;
-            if (!value) {
-                sel = window.getSelection();
-                node = sel.focusNode;
-                value = node.textContent;
-                pos = sel.focusOffset;
-                value = value.substring(0, pos);
-                match = this.matcher.exec(value);
-                if (!match) {
-                    return '';
-                }
-                this.start = match.index;
-                this.end = match.index + match[0].length;
-                this._setDropdownPosition(node);
-                this.searchTerm = match[1];
-            }
-            return $.ui.autocomplete.prototype.search.call(this, this.searchTerm, event);
-        },
-        _setDropdownPosition: function (node) {
-            var boundary, posX, posY, rect;
-            if (this.options.showAtCaret) {
-                boundary = document.createRange();
-                boundary.setStart(node, this.start);
-                boundary.collapse(true);
-                rect = boundary.getClientRects()[0];
-                posX = rect.left + (window.scrollX || window.pageXOffset);
-                posY = rect.top + rect.height + (window.scrollY || window.pageYOffset);
-                this.options.position.of = document;
-                return this.options.position.at = "left+" + posX + " top+" + posY;
             }
         }
     });
@@ -553,7 +498,7 @@
                 piece = value.substring(mention.pos, mention.pos + mention.value.length);
                 if (mention.value !== piece) {
                     this.mentions.splice(i, 1); //removing mentions
-                    $('.mentions').trigger("mentionRemoved", [{ detail: mention }]);
+                 
                 }
             }
             return this.value = value;
@@ -568,14 +513,13 @@
 
         MentionsInput.prototype._onSelect = function (event, ui) {
             this._updateMentions();
-            this._addMention({
+            this._addMention({ // add more attributes according to your json 
                 value: ui.item.value,
                 pos: ui.item.pos,
                 entityid: ui.item.entityid,
                 entitytypeid: ui.item.entitytypeid
             });
 
-            $('.mentions').trigger("mentionAdded", [{ detail: ui.item }]);
             //var evt = new CustomEvent("mentionAdded", { bubbles: true, cancelable: false, detail: ui.item });
             //$(".mentions")[0].dispatchEvent(evt);
             SetCaretAtEnd($('.mentions')[0]);// customization: setting cursor at end on adding mentions in IE edge bug fix 
@@ -668,185 +612,6 @@
         };
 
         return MentionsInput;
-
-    })(MentionsBase);
-
-    MentionsContenteditable = (function (superClass) {
-        var insertMention, mentionTpl;
-
-        extend(MentionsContenteditable, superClass);
-
-        MentionsContenteditable.prototype.selector = '[data-mention]';
-
-        function MentionsContenteditable(input1, options) {
-            this.input = input1;
-            this._onSelect = bind(this._onSelect, this);
-            this._addMention = bind(this._addMention, this);
-            this.settings = {
-                trigger: '@',
-                widget: 'editablecomplete',
-                autocomplete: {
-                    autoFocus: true,
-                    delay: 0
-                }
-            };
-            MentionsContenteditable.__super__.constructor.call(this, this.input, options);
-            options = $.extend({
-                matcher: this._getMatcher(),
-                suffix: this.marker,
-                select: this._onSelect,
-                source: this.options.source,
-                showAtCaret: this.options.showAtCaret
-            }, this.options.autocomplete);
-            this.autocomplete = this.input[this.options.widget](options);
-            this._setValue(this.input.html());
-            this._initEvents();
-        }
-
-        mentionTpl = function (mention) {
-            return "<strong data-mention=\"" + mention.entityid + "\">" + mention.value + "</strong>";
-        };
-
-        insertMention = function (mention, pos, suffix) {
-            var node, range, selection;
-            selection = window.getSelection();
-            node = selection.focusNode;
-            range = selection.getRangeAt(0);
-            range.setStart(node, pos.start);
-            range.setEnd(node, pos.end);
-            range.deleteContents();
-            range.insertNode(mention);
-            if (suffix) {
-                suffix = document.createTextNode(suffix);
-                $(suffix).insertAfter(mention);
-                range.setStartAfter(suffix);
-            } else {
-                range.setStartAfter(mention);
-            }
-            range.collapse(true);
-            selection.removeAllRanges();
-            selection.addRange(range);
-            return mention;
-        };
-
-        MentionsContenteditable.prototype._initEvents = function () {
-            return this.input.find(this.selector).each((function (_this) {
-                return function (i, el) {
-                    return _this._watch(el);
-                };
-            })(this));
-        };
-
-        MentionsContenteditable.prototype._setValue = function (value) {
-            var mentionRE;
-            //mentionRE = /@\[([^\]]+)\]\(([^ \)]+)\)/g;
-            mentionRE = /@\[([^\]]+)\]\(([^ \)]+)\)\(([^ \)]+)\)/g;
-            value = value.replace(mentionRE, (function (_this) {
-                return function (match, value, uid) {
-                    return mentionTpl({
-                        value: value,
-                        entityid: uid
-                    }) + _this.marker;
-                };
-            })(this));
-            return this.input.html(value);
-        };
-
-        MentionsContenteditable.prototype._addMention = function (data) {
-            var mention, mentionNode;
-            mentionNode = $(mentionTpl(data))[0];
-            mention = insertMention(mentionNode, data.pos, this.marker);
-            //SetCaretAtEnd();
-            return this._watch(mention);
-
-        };
-
-        MentionsContenteditable.prototype._onSelect = function (event, ui) {
-            this._addMention(ui.item);
-            this.input.trigger("change." + namespace);
-            return false;
-        };
-
-        MentionsContenteditable.prototype._watch = function (mention) {
-            return mention.addEventListener('DOMCharacterDataModified', function (e) {
-                var offset, range, sel, text;
-                if (e.newValue !== e.prevValue) {
-                    text = e.target;
-                    sel = window.getSelection();
-                    offset = sel.focusOffset;
-                    $(text).insertBefore(mention);
-                    $(mention).remove();
-                    range = document.createRange();
-                    range.setStart(text, offset);
-                    range.collapse(true);
-                    sel.removeAllRanges();
-                    return sel.addRange(range);
-                }
-            });
-        };
-
-        MentionsContenteditable.prototype.update = function () {
-            this._initValue();
-            this._initEvents();
-            return this.input.focus();
-        };
-
-        MentionsContenteditable.prototype.setValue = function () {
-            var j, len, piece, pieces, value;
-            pieces = 1 <= arguments.length ? slice.call(arguments, 0) : [];
-            value = '';
-            for (j = 0, len = pieces.length; j < len; j++) {
-                piece = pieces[j];
-                if (typeof piece === 'string') {
-                    value += piece;
-                } else {
-                    value += this._markupMention(piece);
-                }
-            }
-            this._setValue(value);
-            this._initEvents();
-            return this.input.focus();
-        };
-
-        MentionsContenteditable.prototype.getValue = function () {
-            var markupMention, value;
-            value = this.input.clone();
-            markupMention = this._markupMention;
-            $(this.selector, value).replaceWith(function () {
-                var name, uid;
-                uid = $(this).data('mention');
-                name = $(this).text();
-                return markupMention({
-                    value: name,
-                    entityid: uid
-                });
-            });
-            return value.html().replace(this.marker, '');
-        };
-
-        MentionsContenteditable.prototype.getMentions = function () {
-            var mentions;
-            mentions = [];
-            $(this.selector, this.input).each(function () {
-                return mentions.push({
-                    entityid: $(this).data('mention'),
-                    value: $(this).text()
-                });
-            });
-            return mentions;
-        };
-
-        MentionsContenteditable.prototype.clear = function () {
-            return this.input.html('');
-        };
-
-        MentionsContenteditable.prototype.destroy = function () {
-            this.input.editablecomplete("destroy");
-            this.input.off("." + namespace);
-            return this.input.html(this.getValue());
-        };
-
-        return MentionsContenteditable;
 
     })(MentionsBase);
 
