@@ -1,0 +1,143 @@
+.mentions-input {
+    position: relative;
+    display: inline-block !important;
+}
+
+    .mentions-input .input {
+        /*overflow-y: scroll;*/
+        position: relative;
+        border-width: 1px;
+        margin: 0px;
+        padding: 2px;
+        /*min-height: 50px;*/
+        /*height: 30px;*/
+        line-height: 20px;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        white-space: pre-wrap;
+        -ms-word-wrap: break-word;
+        box-sizing: content-box;
+        background-color: transparent;
+        width: 597px;
+        resize: none;
+        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif !important;
+    }
+    /*.mentions-input .input {
+        overflow-y: scroll;
+        position: relative;
+        border-width: 1px;
+        margin: 0px;
+        padding: 2px;
+        min-height: 50px;
+        /*height: 30px;*/
+    /*line-height: 20px;
+        font-size: 14px;
+        font-style: normal;
+        font-weight: 400;
+        white-space: pre-wrap;
+        -ms-word-wrap: break-word;
+        box-sizing: content-box;
+        background-color: transparent;
+        width: 597px;
+        resize: none;
+        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif !important;
+    }*/
+
+    .mentions-input .highlighter {
+        position: absolute;
+        left: 0;
+        right: 0;
+        color: transparent;
+        overflow: hidden;
+        border-style: solid;
+        border-color: transparent;
+        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif !important;
+        font-size: 14px;
+        line-height: 20px;
+    }
+
+    .mentions-input .highlighter-content {
+        position: relative;
+    }
+
+        .mentions-input .highlighter-content strong {
+            font-weight: inherit;
+            background-color: #a3bcea;
+            display: inline;
+            filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0);
+            /******/
+            -webkit-border-radius: 6px;
+            border-radius: 2px;
+            /*border: 1px solid #CAD8F3;*/
+            background: none;
+            background-color: #DEE7F8;
+            position: relative;
+            line-height: inherit;
+        }
+
+    .mentions-input #mentionTextArea {
+        /*height: 50px;*/
+        min-height: 70px;
+    }
+
+[data-mention] {
+    background-color: #a3bcea;
+    filter: progid:DXImageTransform.Microsoft.Alpha(opacity=0);
+}
+
+.mentions-input .ui-autocomplete {
+    z-index: 1000;
+    top: 100%;
+    left: 0;
+    display: none;
+    width: auto !important;
+    float: left;
+    padding: 5px 0;
+    margin: 2px 0 0;
+    font-size: 14px;
+    text-align: left;
+    list-style: none;
+    background-color: #fff;
+    -webkit-background-clip: padding-box;
+    background-clip: padding-box;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0,0,0,.15);
+    border-radius: 4px;
+    -webkit-box-shadow: 0 6px 12px rgba(0,0,0,.175);
+    box-shadow: 0 6px 12px rgba(0,0,0,.175);
+    max-height: 113px;
+    overflow: auto;
+}
+
+.mentions-autocomplete-link {
+    float: right;
+    margin-right: 22px;
+}
+
+.mentions-input .ui-autocomplete > a:focus, .mentions-input .ui-autocomplete > a:hover {
+    background-color: #2e6da4;
+    background-image: -webkit-linear-gradient(top,#337ab7 0,#2e6da4 100%);
+    background-image: -o-linear-gradient(top,#337ab7 0,#2e6da4 100%);
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#337ab7),to(#2e6da4));
+    background-image: linear-gradient(to bottom,#337ab7 0,#2e6da4 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff337ab7', endColorstr='#ff2e6da4', GradientType=0);
+    background-repeat: repeat-x;
+}
+
+.mentions-input .ui-autocomplete a:focus, .mentions-input .ui-autocomplete a:hover, .mentions-input .ui-autocomplete a.ui-state-focus {
+    color: #fff;
+    text-decoration: none;
+    background: #337ab7;
+    outline: 0;
+}
+
+.mentions-input .ui-autocomplete > li > a {
+    display: block;
+    padding: 3px 20px;
+    clear: both;
+    font-weight: 400;
+    line-height: 1.42857143;
+    color: #333;
+    white-space: nowrap;
+}
