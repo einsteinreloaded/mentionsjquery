@@ -1,6 +1,6 @@
 # mentionsjquery
-facebook like mentioning plugin
-This plugin is a improvement on https://github.com/ivirabyan/jquery-mentions
+Facebook like mentioning plugin.
+This plugin is an improvement on https://github.com/ivirabyan/jquery-mentions
 
 
 Bug Fixes and Improvements:
