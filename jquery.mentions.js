@@ -1043,3 +1043,15 @@ function SetCaretAtEnd(el) {
         elem.focus();
     } // if
 }
+$('selector-class-or-id-name').on('input propertychange paste focus', function() { // binding event with auto grow height of textarea 
+        textarea_height(this, 7);// set the maximum row numbers to be needed in the textarea.
+    });
+    function textarea_height(TextArea, MaxHeight) {// height autogrow function
+        textarea = TextArea;
+        textareaRows = textarea.value.split("\n");
+        if(textareaRows[0] != "undefined" && textareaRows.length < MaxHeight) counter = textareaRows.length;
+        else if(textareaRows.length >= MaxHeight) counter = MaxHeight;
+        else counter = 1;
+        textarea.rows = counter; 
+        $(TextArea).siblings('.highlighter').css("height",$(TextArea).height());
+    }
